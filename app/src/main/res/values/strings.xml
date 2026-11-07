@@ -14,33 +14,29 @@
      limitations under the License.
 -->
 <resources>
-    <string name="app_name">Cupcake</string>
-    <string name="order_cupcakes">Order Cupcakes</string>
-    <string name="one_cupcake">One Cupcake</string>
-    <string name="six_cupcakes">Six Cupcakes</string>
-    <string name="twelve_cupcakes">Twelve Cupcakes</string>
-    <string name="choose_flavor">Choose Flavor</string>
-    <string name="vanilla">Vanilla</string>
-    <string name="chocolate">Chocolate</string>
-    <string name="red_velvet">Red Velvet</string>
-    <string name="salted_caramel">Salted Caramel</string>
-    <string name="coffee">Coffee</string>
-    <string name="special_flavor">Special Flavor</string>
-    <string name="cancel">Cancel</string>
-    <string name="next">Next</string>
-    <string name="choose_pickup_date">Choose Pickup Date</string>
-    <string name="order_summary">Order Summary</string>
-    <string name="send">Send Order to Another App</string>
-    <string name="quantity">Quantity</string>
-    <string name="flavor">Flavor</string>
-    <string name="pickup_date">Pickup date</string>
+    <string name="app_name">TokoKomputer</string>
+    <string name="title_perangkat">Pilih Perangkat</string>
+    <string name="title_konfigurasi">Konfigurasi Komputer</string>
+    <string name="mau_konfigurasi">Mau konfigurasi apa?</string>
+    <string name="pilih_perangkat_desc">Pilih jenis perangkat untuk memulai spesifikasi.</string>
+    <string name="desktop_pc">Desktop PC</string>
+    <string name="desktop_desc">Rakit PC kustom untuk kebutuhan kerja dan gaming.</string>
+    <string name="notebook">Notebook</string>
+    <string name="notebook_desc">Pilih laptop siap pakai dengan opsi kumtomisasi spesifikasi.</string>
+    <string name="langkah_dari">Langkah %1$d dari 5</string>
+    <string name="pilih_prosesor">Pilih Prosesor</string>
+    <string name="pilih_ram">Pilih Memori (RAM)</string>
+    <string name="pilih_hardisk">Pilih Hardisk &amp; SSD</string>
+    <string name="pilih_monitor">Pilih Monitor / Ukuran Layar</string>
+    <string name="pilih_grafis">Pilih Kartu Grafis</string>
+    <string name="estimasi_harga">Estimasi Harga</string>
+    <string name="harga_perkiraan">*Harga perkiraan</string>
+    <string name="lanjut">Lanjut</string>
+    <string name="kembali">Kembali</string>
+    <string name="ringkasan_konfigurasi">Ringkasan Konfigurasi</string>
+    <string name="spesifikasi_ringkasan">Spesifikasi rakitan pilihanmu telah siap dirangkum.</string>
+    <string name="hubungi_toko">Hubungi Toko</string>
+    <string name="ulangi_konfigurasi">Ulangi Konfigurasi</string>
     <string name="subtotal_price">Subtotal %s</string>
     <string name="total_price">Total %s</string>
-    <string name="new_cupcake_order">New Cupcake Order</string>
-    <string name="order_details">Quantity: %1$s \nFlavor: %2$s \nPickup date: %3$s \nTotal: %4$s \n\nThank you!</string>
-    <string name="back_button">Back</string>
-    <plurals name="cupcakes">
-        <item quantity="one">%d cupcake</item>
-        <item quantity="other">%d cupcakes</item>
-    </plurals>
 </resources>

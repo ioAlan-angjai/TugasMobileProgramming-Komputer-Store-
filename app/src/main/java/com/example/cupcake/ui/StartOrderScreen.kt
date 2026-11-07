@@ -1,125 +1,201 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.cupcake.ui
 
-import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.cupcake.R
-import com.example.cupcake.data.DataSource
-import com.example.cupcake.ui.theme.CupcakeTheme
+import androidx.compose.ui.unit.sp
+import com.example.cupcake.ui.theme.TokoPrimary
 
 /**
- * Composable that allows the user to select the desired cupcake quantity and expects
- * [onNextButtonClicked] lambda that expects the selected quantity and triggers the navigation to
- * next screen
+ * [StartOrderScreen] adalah layar awal (Pilih Perangkat) tempat pengguna
+ * memilih jenis perangkat yang ingin dikonfigurasi (Desktop PC / Notebook).
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartOrderScreen(
-    quantityOptions: List<Pair<Int, Int>>,
-    onNextButtonClicked: (Int) -> Unit,
+    onDeviceSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "AlanKomputer Store",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1F2937)
+                    )
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(50))
+                                .background(TokoPrimary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profil",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                },
+                windowInsets = TopAppBarDefaults.windowInsets,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                )
+            )
+        },
+        containerColor = Color(0xFFF5F6F8)
+    ) { innerPadding ->
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-            Image(
-                painter = painterResource(R.drawable.cupcake),
-                contentDescription = null,
-                modifier = Modifier.width(300.dp)
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
-            Text(
-                text = stringResource(R.string.order_cupcakes),
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
-        }
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(
-                dimensionResource(id = R.dimen.padding_medium)
-            )
-        ) {
-            quantityOptions.forEach { item ->
-                SelectQuantityButton(
-                    labelResourceId = item.first,
-                    onClick = { onNextButtonClicked(item.second) },
-                    modifier = Modifier.fillMaxWidth(),
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    text = "Mau konfigurasi apa?",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1F2937)
+                )
+                Text(
+                    text = "Pilih jenis perangkat untuk memulai spesifikasi.",
+                    fontSize = 14.sp,
+                    color = Color(0xFF6B7280)
                 )
             }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            DeviceOptionCard(
+                title = "Desktop PC",
+                description = "Rakit PC kustom untuk kebutuhan kerja dan gaming.",
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Desktop PC",
+                        tint = TokoPrimary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                },
+                onClick = { onDeviceSelected("Desktop PC") }
+            )
+
+            DeviceOptionCard(
+                title = "Notebook",
+                description = "Pilih laptop siap pakai dengan opsi kumtomisasi spesifikasi.",
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Build,
+                        contentDescription = "Notebook",
+                        tint = TokoPrimary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                },
+                onClick = { onDeviceSelected("Notebook") }
+            )
         }
     }
 }
 
 /**
- * Customizable button composable that displays the [labelResourceId]
- * and triggers [onClick] lambda when this composable is clicked
+ * Komponen kartu pilihan perangkat (Desktop PC / Notebook).
  */
 @Composable
-fun SelectQuantityButton(
-    @StringRes labelResourceId: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+fun DeviceOptionCard(
+    title: String,
+    description: String,
+    icon: @Composable () -> Unit,
+    onClick: () -> Unit
 ) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.widthIn(min = 250.dp)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Text(stringResource(labelResourceId))
-    }
-}
-
-@Preview
-@Composable
-fun StartOrderPreview() {
-    CupcakeTheme {
-        StartOrderScreen(
-            quantityOptions = DataSource.quantityOptions,
-            onNextButtonClicked = {},
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(dimensionResource(R.dimen.padding_medium))
-        )
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFD4F8D7).copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                icon()
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1F2937)
+                )
+                Text(
+                    text = description,
+                    fontSize = 13.sp,
+                    color = Color(0xFF6B7280)
+                )
+            }
+
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = "Pilih",
+                tint = Color(0xFF9CA3AF)
+            )
+        }
     }
 }

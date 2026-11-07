@@ -1,118 +1,114 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.cupcake.ui
 
 import androidx.lifecycle.ViewModel
+import com.example.cupcake.data.ComponentOption
+import com.example.cupcake.data.DataSource
 import com.example.cupcake.data.OrderUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-
-/** Price for a single cupcake */
-private const val PRICE_PER_CUPCAKE = 2.00
-
-/** Additional cost for same day pickup of an order */
-private const val PRICE_FOR_SAME_DAY_PICKUP = 3.00
 
 /**
- * [OrderViewModel] holds information about a cupcake order in terms of quantity, flavor, and
- * pickup date. It also knows how to calculate the total price based on these order details.
+ * ViewModel yang mengelola state konfigurasi komputer ([OrderUiState])
+ * dan menyediakan fungsi untuk memperbarui pilihan komponen serta menghitung total harga secara reaktif.
  */
 class OrderViewModel : ViewModel() {
 
-    /**
-     * Cupcake state for this order
-     */
-    private val _uiState = MutableStateFlow(OrderUiState(pickupOptions = pickupOptions()))
+    // State internal yang dapat dimodifikasi
+    private val _uiState = MutableStateFlow(OrderUiState())
+
+    // State publik berjenis StateFlow untuk diobservasi oleh UI Compose
     val uiState: StateFlow<OrderUiState> = _uiState.asStateFlow()
 
     /**
-     * Set the quantity [numberCupcakes] of cupcakes for this order's state and update the price
+     * Menentukan jenis perangkat yang dipilih (Desktop PC / Notebook)
+     * sekaligus menetapkan harga dasar (base price) dan mereset komponen.
      */
-    fun setQuantity(numberCupcakes: Int) {
+    fun setDeviceType(deviceType: String) {
+        val basePrice = if (deviceType == "Desktop PC") {
+            DataSource.BASE_PRICE_DESKTOP
+        } else {
+            DataSource.BASE_PRICE_NOTEBOOK
+        }
+
         _uiState.update { currentState ->
-            currentState.copy(
-                quantity = numberCupcakes,
-                price = calculatePrice(quantity = numberCupcakes)
+            val newState = currentState.copy(
+                deviceType = deviceType,
+                basePrice = basePrice,
+                processor = null,
+                ram = null,
+                storage = null,
+                monitor = null,
+                graphicsCard = null
             )
+            newState.copy(totalPrice = calculateTotalPrice(newState))
         }
     }
 
-    /**
-     * Set the [desiredFlavor] of cupcakes for this order's state.
-     * Only 1 flavor can be selected for the whole order.
-     */
-    fun setFlavor(desiredFlavor: String) {
+    /** Memperbarui pilihan prosesor */
+    fun setProcessor(option: ComponentOption) {
         _uiState.update { currentState ->
-            currentState.copy(flavor = desiredFlavor)
+            val newState = currentState.copy(processor = option)
+            newState.copy(totalPrice = calculateTotalPrice(newState))
         }
     }
 
-    /**
-     * Set the [pickupDate] for this order's state and update the price
-     */
-    fun setDate(pickupDate: String) {
+    /** Memperbarui pilihan kapasitas RAM */
+    fun setRam(option: ComponentOption) {
         _uiState.update { currentState ->
-            currentState.copy(
-                date = pickupDate,
-                price = calculatePrice(pickupDate = pickupDate)
+            val newState = currentState.copy(ram = option)
+            newState.copy(totalPrice = calculateTotalPrice(newState))
+        }
+    }
+
+    /** Memperbarui kategori tipe penyimpanan (HDD, SSD SATA, SSD NVMe) */
+    fun setStorageType(type: String) {
+        _uiState.update { currentState ->
+            val newState = currentState.copy(
+                storageType = type,
+                storage = null // Reset pilihan spesifik saat tipe berubah
             )
+            newState.copy(totalPrice = calculateTotalPrice(newState))
         }
     }
 
-    /**
-     * Reset the order state
-     */
+    /** Memperbarui pilihan spesifik penyimpanan */
+    fun setStorage(option: ComponentOption) {
+        _uiState.update { currentState ->
+            val newState = currentState.copy(storage = option)
+            newState.copy(totalPrice = calculateTotalPrice(newState))
+        }
+    }
+
+    /** Memperbarui pilihan monitor atau ukuran layar */
+    fun setMonitor(option: ComponentOption) {
+        _uiState.update { currentState ->
+            val newState = currentState.copy(monitor = option)
+            newState.copy(totalPrice = calculateTotalPrice(newState))
+        }
+    }
+
+    /** Memperbarui pilihan kartu grafis (GPU) */
+    fun setGraphicsCard(option: ComponentOption) {
+        _uiState.update { currentState ->
+            val newState = currentState.copy(graphicsCard = option)
+            newState.copy(totalPrice = calculateTotalPrice(newState))
+        }
+    }
+
+    /** Menghitung total harga keseluruhan (Harga Dasar + Seluruh Komponen Terpilih) */
+    private fun calculateTotalPrice(state: OrderUiState): Long {
+        return state.basePrice +
+                (state.processor?.price ?: 0L) +
+                (state.ram?.price ?: 0L) +
+                (state.storage?.price ?: 0L) +
+                (state.monitor?.price ?: 0L) +
+                (state.graphicsCard?.price ?: 0L)
+    }
+
+    /** Mereset konfigurasi kembali ke kondisi awal */
     fun resetOrder() {
-        _uiState.value = OrderUiState(pickupOptions = pickupOptions())
-    }
-
-    /**
-     * Returns the calculated price based on the order details.
-     */
-    private fun calculatePrice(
-        quantity: Int = _uiState.value.quantity,
-        pickupDate: String = _uiState.value.date
-    ): String {
-        var calculatedPrice = quantity * PRICE_PER_CUPCAKE
-        // If the user selected the first option (today) for pickup, add the surcharge
-        if (pickupOptions()[0] == pickupDate) {
-            calculatedPrice += PRICE_FOR_SAME_DAY_PICKUP
-        }
-        val formattedPrice = NumberFormat.getCurrencyInstance().format(calculatedPrice)
-        return formattedPrice
-    }
-
-    /**
-     * Returns a list of date options starting with the current date and the following 3 dates.
-     */
-    private fun pickupOptions(): List<String> {
-        val dateOptions = mutableListOf<String>()
-        val formatter = SimpleDateFormat("E MMM d", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        // add current date and the following 3 dates.
-        repeat(4) {
-            dateOptions.add(formatter.format(calendar.time))
-            calendar.add(Calendar.DATE, 1)
-        }
-        return dateOptions
+        _uiState.value = OrderUiState()
     }
 }
